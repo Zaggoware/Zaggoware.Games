@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp5.0</TargetFramework>
+        <LangVersion>8</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Zaggoware.Games.CardGames.Common\Zaggoware.Games.CardGames.Common.csproj" />
+      <ProjectReference Include="..\Zaggoware.Games.Hubs\Zaggoware.Games.Hubs.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
+      <PackageReference Include="System.Text.Json" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="RulePresets\CrazyEightsGame\Default.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="RulePresets\CrazyEightsGame\Pesten.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="RulePresets" />
+    </ItemGroup>
+
+</Project>

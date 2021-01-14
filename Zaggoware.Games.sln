@@ -1,0 +1,69 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zaggoware.Games.Web", "src\Zaggoware.Games.Web\Zaggoware.Games.Web.csproj", "{C9231651-BDA6-4706-8B2F-8A23DA6D180A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zaggoware.Games.CrazyEights", "src\Zaggoware.Games.CrazyEights\Zaggoware.Games.CrazyEights.csproj", "{7AECBBF3-B0E1-4540-A049-B9A2A3D7A0B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zaggoware.Games.CardGames.Common", "src\Zaggoware.Games.CardGames.Common\Zaggoware.Games.CardGames.Common.csproj", "{9D659E35-1528-44C0-8867-8E4761B30DA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zaggoware.Games.Common", "src\Zaggoware.Games.Common\Zaggoware.Games.Common.csproj", "{03782726-0392-4AE3-BA25-C0EBD5CF72AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{607382CD-91BA-41C5-9BE4-09777D036079}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{A602FC25-5943-44BC-B1CF-932C31974AD6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{567AC41A-D776-4C99-9B97-F4DBC7104F52}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{95D0EF82-4703-47CA-A9CC-0903AC0AFCE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{89A2E3ED-CE52-4BD1-A613-BAB5D6427B6E}"
+ProjectSection(SolutionItems) = preProject
+	LICENSE = LICENSE
+	README.md = README.md
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{75F678F0-AFB9-474A-A300-7730B60707F3}"
+ProjectSection(SolutionItems) = preProject
+	.gitignore = .gitignore
+EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zaggoware.Games.Hubs", "src\Zaggoware.Games.Hubs\Zaggoware.Games.Hubs.csproj", "{606A8D91-CBFB-462B-8FF5-3CE069403192}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C9231651-BDA6-4706-8B2F-8A23DA6D180A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9231651-BDA6-4706-8B2F-8A23DA6D180A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9231651-BDA6-4706-8B2F-8A23DA6D180A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9231651-BDA6-4706-8B2F-8A23DA6D180A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AECBBF3-B0E1-4540-A049-B9A2A3D7A0B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AECBBF3-B0E1-4540-A049-B9A2A3D7A0B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AECBBF3-B0E1-4540-A049-B9A2A3D7A0B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AECBBF3-B0E1-4540-A049-B9A2A3D7A0B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D659E35-1528-44C0-8867-8E4761B30DA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D659E35-1528-44C0-8867-8E4761B30DA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D659E35-1528-44C0-8867-8E4761B30DA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D659E35-1528-44C0-8867-8E4761B30DA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03782726-0392-4AE3-BA25-C0EBD5CF72AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03782726-0392-4AE3-BA25-C0EBD5CF72AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03782726-0392-4AE3-BA25-C0EBD5CF72AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03782726-0392-4AE3-BA25-C0EBD5CF72AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{606A8D91-CBFB-462B-8FF5-3CE069403192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{606A8D91-CBFB-462B-8FF5-3CE069403192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{606A8D91-CBFB-462B-8FF5-3CE069403192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{606A8D91-CBFB-462B-8FF5-3CE069403192}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C9231651-BDA6-4706-8B2F-8A23DA6D180A} = {A602FC25-5943-44BC-B1CF-932C31974AD6}
+		{03782726-0392-4AE3-BA25-C0EBD5CF72AA} = {567AC41A-D776-4C99-9B97-F4DBC7104F52}
+		{9D659E35-1528-44C0-8867-8E4761B30DA1} = {567AC41A-D776-4C99-9B97-F4DBC7104F52}
+		{A602FC25-5943-44BC-B1CF-932C31974AD6} = {95D0EF82-4703-47CA-A9CC-0903AC0AFCE2}
+		{607382CD-91BA-41C5-9BE4-09777D036079} = {95D0EF82-4703-47CA-A9CC-0903AC0AFCE2}
+		{567AC41A-D776-4C99-9B97-F4DBC7104F52} = {95D0EF82-4703-47CA-A9CC-0903AC0AFCE2}
+		{7AECBBF3-B0E1-4540-A049-B9A2A3D7A0B6} = {607382CD-91BA-41C5-9BE4-09777D036079}
+		{606A8D91-CBFB-462B-8FF5-3CE069403192} = {567AC41A-D776-4C99-9B97-F4DBC7104F52}
+	EndGlobalSection
+EndGlobal

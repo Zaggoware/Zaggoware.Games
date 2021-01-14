@@ -1,0 +1,35 @@
+﻿@import '../../scss/_reference.scss';
+
+.playing-card {
+    width: 86px;
+    height: 132px;
+    background-repeat: no-repeat;
+    background-position: top left;
+    background-size: contain;
+    background-image: url('/statics/playing-cards/back_gray.png');
+    font-size: 0;
+
+    $card-colors: 'red', 'yellow', 'green', 'blue', 'purple';
+
+    @each $color, $index in $card-colors {
+        &--#{$color} {
+            background-image: url('/statics/playing-cards/back_#{$color}.png');
+        }
+    }
+
+    @for $suit from 1 through 4 {
+        @for $rank from 1 through 15 {
+            &--#{$suit}_#{$rank} {
+                background-image: url('/statics/playing-cards/#{$suit}_#{$rank}.png');
+            }
+        }
+    }
+
+    &--joker {
+        background-image: url('/statics/playing-cards/joker.png');
+    }
+
+    &--selectable {
+        cursor: pointer;
+    }
+}

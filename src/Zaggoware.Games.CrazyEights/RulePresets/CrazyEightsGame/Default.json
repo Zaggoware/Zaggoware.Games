@@ -1,0 +1,28 @@
+﻿{
+    "MinPlayers": 2,
+    "MaxPlayers": 6,
+    "MaxTurns": 0,
+    "MaxTurnDuration": "00:00:10.000",
+
+    "NumberOfPacks": 1,
+    "ExcludedCards": [],
+    "NumberOfJokersPerPack": 0,
+    "StartingCardsPerPlayer": 5,
+
+    "EliminationMode": false,
+    "DefaultStackingMode": "SameRank, SameSuit",
+
+    "ColorChangerCards": ["Jack"],
+    "ColorChangerCardStackingMode": "Always",
+    "ColorChangerMode": "Suit",
+    "AllowColorChangerCardEnding": true,
+
+    "MandatoryDrawCards": { "Seven": 2 },
+    "AllowMandatoryDrawCardEnding": true,
+
+    "ReversingCards": ["Ace"],
+    "AllowReversingCardEnding": true,
+
+    "SingleTurnStackableCards": [],
+    "AllowSingleTurnStackableCardEnding": true
+}

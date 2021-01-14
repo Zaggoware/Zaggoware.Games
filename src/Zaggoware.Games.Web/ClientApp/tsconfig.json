@@ -1,0 +1,45 @@
+{
+    "compilerOptions": {
+        "noEmit": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "jsx": "preserve",
+        "lib": [
+            "es2015",
+            "es2017",
+            "dom",
+            "dom.iterable",
+            "scripthost"
+        ],
+        "module": "esnext",
+        "moduleResolution": "node",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ]
+        },
+        "sourceMap": true,
+        "strict": false,
+        "target": "esnext",
+        "typeRoots": [
+            "node_modules/@types",
+            "src/typings"
+        ],
+        "types": [
+            "node"
+        ]
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.vue",
+        "tests/**/*.ts",
+        "tests/**/*.tsx"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

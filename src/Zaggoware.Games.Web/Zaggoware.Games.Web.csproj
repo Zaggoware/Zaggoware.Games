@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>8</LangVersion>
+        <Nullable>enable</Nullable>
+        <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="ClientApp\src\services" />
+      <Folder Include="ClientApp\src\store" />
+      <Folder Include="Controllers" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Zaggoware.Games.CardGames.Common\Zaggoware.Games.CardGames.Common.csproj" />
+      <ProjectReference Include="..\Zaggoware.Games.CrazyEights\Zaggoware.Games.CrazyEights.csproj" />
+      <ProjectReference Include="..\Zaggoware.Games.Hubs\Zaggoware.Games.Hubs.csproj" />
+      <ProjectReference Include="..\Zaggoware.Games.Common\Zaggoware.Games.Common.csproj" />
+    </ItemGroup>
+
+</Project>

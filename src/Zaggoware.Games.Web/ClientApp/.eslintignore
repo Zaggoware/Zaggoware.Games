@@ -1,0 +1,12 @@
+﻿node_modules/**
+src/typings/**
+src/models/**
+src/utils/polyfills/*
+src/services/generated-services.ts
+public/**
+**.scss
+**.css
+.stylelintrc.js
+vue.config.js
+postcss.config.js
+babel.config.js

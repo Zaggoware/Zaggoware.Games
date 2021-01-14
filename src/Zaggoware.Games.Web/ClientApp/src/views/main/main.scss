@@ -1,0 +1,138 @@
+﻿@import '../../scss/_reference.scss';
+
+.playing-cards {
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    vertical-align: bottom;
+    list-style: none;
+    justify-content: space-between;
+    display: flex;
+
+    &__card-item {
+        max-width: 86px;
+    }
+}
+
+.game {
+    &__container {
+        border-top: 1px solid #000000;
+        padding: 10px;
+        margin-top: 150px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    &__players,
+    &__spectators {
+        width: 300px;
+        padding: 10px;
+        position: absolute;
+        top: 10px;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #ffffff;
+    }
+
+    &__players {
+        left: 10px;
+    }
+
+    &__spectators {
+        right: 10px;
+    }
+
+    &__discard-pile {
+        width: 86px;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        margin-left: 5px;
+    }
+
+    &__stockpile {
+        width: 86px;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        margin-left: -91px;
+    }
+
+    &__color-suit-chooser {
+        width: 350px;
+        height: 350px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: calc(-350px / 2);
+        margin-left: calc(-350px / 2);
+        background-color: rgba(255, 255, 255, 0.75);
+        padding: 10px;
+    }
+
+    &__player-hand {
+        margin-top: 150px;
+    }
+
+    &__button {
+        &--start {
+            width: 150px;
+            height: 50px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -25px;
+            margin-left: -50px;
+        }
+
+        &--end-turn {
+            width: 150px;
+            height: 50px;
+            position: relative;
+        }
+    }
+}
+
+.chat {
+    &__container {
+        width: 250px;
+        height: 250px;
+        border: 1px solid #000000;
+    }
+
+    &__messages {
+        height: calc(100% - 35px);
+        overflow-y: scroll;
+        border-bottom: 1px solid #000000;
+    }
+
+    &__messages-list {
+        list-style: none;
+        margin: 0;
+        padding: 5px;
+    }
+
+    &__new-message-container {
+        height: 35px;
+        padding: 5px;
+    }
+
+    &__new-message {
+        width: calc(100% - 60px);
+    }
+
+    &__button {
+        &--new-message {
+            width: 60px;
+        }
+    }
+}
+
+.chat-message {
+    &__name {
+        font-weight: 600;
+        margin-right: 5px;
+    }
+}

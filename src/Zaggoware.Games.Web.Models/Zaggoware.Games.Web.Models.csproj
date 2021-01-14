@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>8</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Zaggoware.Games.CardGames.Common\Zaggoware.Games.CardGames.Common.csproj" />
+      <ProjectReference Include="..\Zaggoware.Games.CrazyEights\Zaggoware.Games.CrazyEights.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="CrazyEights" />
+    </ItemGroup>
+
+</Project>
