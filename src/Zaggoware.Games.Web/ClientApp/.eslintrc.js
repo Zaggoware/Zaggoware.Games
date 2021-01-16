@@ -405,7 +405,7 @@ module.exports = {
         // 'vue/require-component-is': 'error', // essential
         // 'vue/require-prop-type-constructor': 'error', // essential
         // 'vue/require-render-return': 'error', // essential
-        // 'vue/require-v-for-key': 'error', // essential
+        'vue/require-v-for-key': 'warn', // essential
         // 'vue/require-valid-default-prop': 'error', // essential
         // 'vue/return-in-computed-property': 'error', // essential
         // 'vue/use-v-on-exact': 'error', // essential

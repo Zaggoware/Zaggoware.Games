@@ -6,7 +6,7 @@ import { BaseMixin } from '@/mixins/base-mixin';
 export default class PlayingCard extends Mixins(BaseMixin)
 {
     @Prop()
-    customClasses?: Record<string, boolean>
+    customClasses?: Record<string, boolean>;
 
     @Prop()
     rank?: number;

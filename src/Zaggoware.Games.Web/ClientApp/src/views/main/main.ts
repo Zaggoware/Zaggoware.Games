@@ -131,8 +131,9 @@ export default class Main extends Mixins(BaseMixin)
         this.hubConnection.hubConnection.on('GameStopped', async () =>
         {
             console.log('Game stopped.');
+
+            this.started = false;
             await this.fetchGameInfo();
-            alert('The game has been stopped.');
         });
 
         this.hubConnection.hubConnection.on('TurnBegan', async (player: CrazyEightsPlayerInfo, turnIndex: number, turnStartDateTimeUtc?: Date) =>
@@ -291,7 +292,7 @@ export default class Main extends Mixins(BaseMixin)
             this.discardPile.splice(this.discardPile.length - 1, 1);
 
             const color = this.getColorFromSuit(this.nextSuit);
-            this.discardPile.push({ suit: this.nextSuit!, color: color, rank: lastCardRank });
+            this.discardPile.push({ suit: this.nextSuit, color: color, rank: lastCardRank });
         }
     }
 
@@ -434,7 +435,7 @@ export default class Main extends Mixins(BaseMixin)
             return;
         }
 
-        let result: boolean = false;
+        let result = false;
         if (this.rules.colorChangerMode === ColorChangerMode.Color)
         {
             const color = this.getColorFromSuit(suit);
@@ -448,6 +449,7 @@ export default class Main extends Mixins(BaseMixin)
         if (!!result)
         {
             this.canPickColorOrSuit = false;
+            await this.endTurn();
         }
     }
 

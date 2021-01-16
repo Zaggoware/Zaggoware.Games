@@ -1,4 +1,4 @@
-﻿import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
+﻿import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 export const chatHub = new HubConnectionBuilder()
     .withUrl('/hubs/chat')

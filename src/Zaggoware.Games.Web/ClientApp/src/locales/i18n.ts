@@ -6,7 +6,7 @@ Vue.use(VueI18n);
 
 const locale = 'en';
 export const messages = {
-    en: en,
+    en: en
 };
 
 export const i18n: VueI18n = new VueI18n({
