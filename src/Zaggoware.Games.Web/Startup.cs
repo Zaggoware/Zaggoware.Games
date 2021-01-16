@@ -44,6 +44,7 @@ namespace Zaggoware.Games.Web
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseSpaStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
 
