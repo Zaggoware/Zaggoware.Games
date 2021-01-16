@@ -141,11 +141,12 @@
         {
             var game = GetGame();
             var players = game!.GetPlayers();
+
             var gameInfo = new CrazyEightsGameInfo
             {
                 Paused = game.IsPaused,
                 Started = game.IsStarted,
-                Players =  players
+                Players = players
                     .Select(p => new CrazyEightsPlayerInfo(p))
                     .ToArray(),
                 Spectators = game.GetSpectators(),
@@ -270,7 +271,9 @@
 
             internal static void OnGamePlayerAdded(object? sender, CrazyEightsPlayer args)
             {
-                Context?.Clients.All.SendAsync(CrazyEightsGameEvents.PlayerAdded.ToString(), args);
+                Context?.Clients.All.SendAsync(
+                    CrazyEightsGameEvents.PlayerAdded.ToString(),
+                    new CrazyEightsPlayerInfo(args));
             }
 
             internal static void OnGamePlayerFinished(object? sender, CrazyEightsPlayer args)

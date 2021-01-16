@@ -134,7 +134,7 @@ export class CrazyEightsGameRules implements TurnBasedCardGameRules
 
 export class CrazyEightsPlayerInfo
 {
-    id: string = '';
+    connectionId: string = '';
     name: string = '';
     cardsInHand: number = 0;
 }

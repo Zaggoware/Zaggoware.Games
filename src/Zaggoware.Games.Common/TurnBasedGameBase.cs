@@ -31,8 +31,6 @@
 
         public event EventHandler<GameTurnEventArgs<TPlayer>>? TurnTimedOut;
 
-        public virtual bool CanChangeTurnDirection => true;
-
         public TPlayer? CurrentPlayer { get; private set; }
 
         public bool IsTurnStarted { get; protected set; }
@@ -103,7 +101,7 @@
 
         public virtual bool ChangeTurnDirection()
         {
-            if (!CanChangeTurnDirection)
+            if (!Rules.CanChangeTurnDirection)
             {
                 return false;
             }
@@ -156,6 +154,15 @@
             {
                 return index >= 0 ? index : Players.Count - 1;
             }
+        }
+
+        protected override void OnStarting()
+        {
+            base.OnStarting();
+
+            TurnIndex = -1;
+            CurrentPlayerIndex = -1;
+            IsTurnStarted = false;
         }
 
         protected virtual void OnTurnTimedOut(GameTurnEventArgs<TPlayer> args)

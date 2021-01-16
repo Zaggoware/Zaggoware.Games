@@ -38,7 +38,8 @@ export default class Main extends Mixins(BaseMixin)
     stockpileCount = 0;
     chatMessages: MessageInfo[] = [];
     newMessage = '';
-    nextColorOrSuit?: CardColor | CardSuit = null;
+    nextColor?: CardColor = null;
+    nextSuit?: CardSuit = null;
     canPickColorOrSuit = false;
     pickColorOrSuitCards: PlayingCard[] = [];
 
@@ -97,7 +98,7 @@ export default class Main extends Mixins(BaseMixin)
         {
             console.log('A player was removed:', player);
 
-            const index = this.players.findIndex((p) => p.id === player.id);
+            const index = this.players.findIndex((p) => p.connectionId === player.connectionId);
             if (index >= 0)
             {
                 this.players.splice(index, 1);
@@ -150,6 +151,9 @@ export default class Main extends Mixins(BaseMixin)
         {
             console.log('A card was played:', card, 'by:', player);
 
+            this.nextColor = null;
+            this.nextSuit = null;
+
             this.discardPile.push(card);
             await this.fetchGameInfo();
         });
@@ -168,7 +172,8 @@ export default class Main extends Mixins(BaseMixin)
         this.hubConnection.onColorChanged((model: CrazyEightsColorChangedHubEventModel) =>
         {
             console.log('The next color has been changed to:', model.color);
-            this.nextColorOrSuit = model.color;
+            this.nextColor = model.color;
+            this.nextSuit = null;
 
             // TODO: Let the player visually know what the next color is.
         });
@@ -176,21 +181,14 @@ export default class Main extends Mixins(BaseMixin)
         this.hubConnection.onSuitChanged((model: CrazyEightsSuitChangedHubEventModel) =>
         {
             console.log('The next suit has been changed to:', model.suit);
-            this.nextColorOrSuit = model.suit;
-
-            const lastCardRank = this.discardPile[this.discardPile.length - 1].rank;
-            if (this.rules.colorChangerCards.includes(lastCardRank))
-            {
-                this.discardPile.splice(this.discardPile.length - 1, 1);
-
-                const color = this.getColorFromSuit(model.suit);
-                this.discardPile.push({ suit: model.suit!, color: color, rank: lastCardRank });
-            }
+            this.nextColor = null;
+            this.nextSuit = model.suit;
+            this.showNextSuit();
         });
 
         this.hubConnection.hubConnection.on('PlayerFinished', (player: CrazyEightsPlayerInfo) =>
         {
-            alert(`"${player.name} emptied their hand.`);
+            alert(`${player.name} emptied their hand.`);
         });
 
         console.log('Starting GameHub...');
@@ -266,7 +264,7 @@ export default class Main extends Mixins(BaseMixin)
             this.currentTurnIndex = game.currentTurnIndex;
             this.currentPlayerId = game.currentPlayerId;
             this.currentPlayer = !!game.currentPlayerId
-                ? game.players.find((p: CrazyEightsPlayerInfo) => p.id === game.currentPlayerId)
+                ? game.players.find((p: CrazyEightsPlayerInfo) => p.connectionId === game.currentPlayerId)
                 : null;
             this.cardsInHand = game.cardsInHand;
 
@@ -275,7 +273,26 @@ export default class Main extends Mixins(BaseMixin)
                 // TODO: setup table.
                 this.playersSetup = true;
             }
+
+            this.showNextSuit();
         });
+    }
+
+    showNextSuit(): void
+    {
+        if (this.nextSuit === null)
+        {
+            return;
+        }
+
+        const lastCardRank = this.discardPile[this.discardPile.length - 1].rank;
+        if (this.rules.colorChangerCards.includes(lastCardRank))
+        {
+            this.discardPile.splice(this.discardPile.length - 1, 1);
+
+            const color = this.getColorFromSuit(this.nextSuit);
+            this.discardPile.push({ suit: this.nextSuit!, color: color, rank: lastCardRank });
+        }
     }
 
     submitName(evt: Event): boolean
@@ -383,7 +400,7 @@ export default class Main extends Mixins(BaseMixin)
 
     isCurrentPlayer(player: CrazyEightsPlayerInfo): boolean
     {
-        return this.currentPlayerId === player.id;
+        return this.currentPlayerId === player.connectionId;
     }
 
     async drawCard(): Promise<void>

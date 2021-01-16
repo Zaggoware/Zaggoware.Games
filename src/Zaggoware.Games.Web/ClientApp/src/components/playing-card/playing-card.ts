@@ -6,6 +6,9 @@ import { BaseMixin } from '@/mixins/base-mixin';
 export default class PlayingCard extends Mixins(BaseMixin)
 {
     @Prop()
+    customClasses?: Record<string, boolean>
+
+    @Prop()
     rank?: number;
 
     @Prop()
@@ -20,7 +23,8 @@ export default class PlayingCard extends Mixins(BaseMixin)
             'playing-card': true,
             'playing-card--selectable': !!this.selectable,
             [`playing-card--${this.suit}_${this.rank}`]: !!this.rank && !!this.suit,
-            'playing-card--joker': this.rank === CardRank.Joker
+            'playing-card--joker': this.rank === CardRank.Joker,
+            ...this.customClasses
         };
     }
 

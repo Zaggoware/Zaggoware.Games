@@ -1,4 +1,6 @@
 ﻿export default {
+    'cards': 'cards',
+
     'cardSuit0': 'any',
     'cardSuit1': 'clubs',
     'cardSuit2': 'diamonds',

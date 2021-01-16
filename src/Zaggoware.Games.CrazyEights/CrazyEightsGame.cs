@@ -31,9 +31,6 @@
 
         public event EventHandler<CrazyEightsPlayer>? PlayerFinished;
 
-        public override bool CanChangeTurnDirection =>
-            Rules.ReversingCards.Any(c => c == DiscardPile.LastOrDefault().Rank);
-
         public CardStack DiscardPile { get; } = new CardStack();
 
         public CardSuit? NextSuit => _colorChangerState?.Suit;
@@ -149,12 +146,10 @@
                     || !Rules.EliminationMode
                     || (Rules.EliminationMode && !_shouldChangeColor)))
             {
-                // The player has no more cards in hand. Turn can be ended automatically.
-                EndTurn();
-                return true;
+                // The player has no more cards in hand. Don't end turn yet, played card can affect the leftover players.
+                _enoughCardsPlayed = true;
             }
-
-            if (Rules.SingleTurnStackableCards.Contains(card.Rank))
+            else if (Rules.SingleTurnStackableCards.Contains(card.Rank))
             {
                 // Single-turn stackable card has been played.
                 _enoughCardsPlayed = false;
@@ -190,6 +185,7 @@
 
             if (Rules.ReversingCards.Contains(card.Rank))
             {
+                // The current player played a card that reverses the playing order.
                 ChangeTurnDirection();
             }
 
@@ -199,10 +195,9 @@
 
         protected override bool CanEndTurn(int turnIndex, int playerIndex, DateTime turnStartedDateTimeUtc)
         {
-            return _shouldSkipNextTurn
-                || (base.CanEndTurn(turnIndex, playerIndex, turnStartedDateTimeUtc)
-                    && (_enoughCardsDrawn || _enoughCardsPlayed)
-                    && !_shouldChangeColor);
+            return base.CanEndTurn(turnIndex, playerIndex, turnStartedDateTimeUtc)
+                && (_enoughCardsDrawn || _enoughCardsPlayed)
+                && !_shouldChangeColor;
         }
 
         protected override void OnInitialize(CrazyEightsGameRules rules)
@@ -257,9 +252,12 @@
 
             if (_shouldSkipNextTurn)
             {
+                _shouldSkipNextTurn = false;
+                _enoughCardsDrawn = true;
+                _enoughCardsPlayed = true;
+
                 // Previous player played a skip next turn card. Current turn is immediately ended.
                 EndTurn();
-                _shouldSkipNextTurn = false;
                 return;
             }
 

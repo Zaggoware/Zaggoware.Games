@@ -20,21 +20,24 @@
 
         <div class="game__container">
             <div class="game__players">
-                <h3>Players:</h3>
-                <ul>
+                <h3>{{ $translateAndCapitalize('titles.players') }}</h3>
+                <ul class="connection-list player-list">
                     <li v-for="player in players"
-                        :key="player.id">
+                        :key="player.connectionId"
+                        class="connection-list__item player-list__player"
+                        :class="{ 'player-list__player--current': isCurrentPlayer(player) }">
                         {{ player.name }}
-                        <span v-if="isCurrentPlayer(player)">(T)</span>
+                        <span v-if="player.cardsInHand > 0">({{ player.cardsInHand }} {{ $translate('labels.cards') }})</span>
                     </li>
                 </ul>
             </div>
 
             <div class="game__spectators">
-                <h3>Spectators:</h3>
-                <ul>
+                <h3>{{ $translateAndCapitalize('titles.spectators') }}</h3>
+                <ul class="connection-list spectator-list">
                     <li v-for="spectator in spectators"
-                        :key="spectator.id">
+                        :key="spectator.id"
+                        class="connection-list__item">
                         {{ spectator.name }}
                     </li>
                 </ul>
@@ -56,12 +59,15 @@
 
             <div v-if="canPickColorOrSuit"
                  class="game__color-suit-chooser">
-                <playing-card v-for="card in pickColorOrSuitCards"
-                              :rank="card.rank"
-                              :suit="card.suit"
-                              :selectable="canPickColorOrSuit"
-                              @select="pickColorOrSuit">
-                </playing-card>
+                <h3>{{ $translateAndCapitalize('titles.chooseSuit') }}</h3>
+                <div class="game__color-suit-chooser-container">
+                    <playing-card v-for="card in pickColorOrSuitCards"
+                                  :rank="card.rank"
+                                  :suit="card.suit"
+                                  :selectable="canPickColorOrSuit"
+                                  @select="pickColorOrSuit">
+                    </playing-card>
+                </div>
             </div>
 
             <button v-if="canStart"
@@ -72,12 +78,11 @@
             </button>
 
             <div class="game__player-hand">
-                <h3>My cards:</h3>
+                <h3>{{ $translateAndCapitalize('titles.myCards') }}</h3>
 
                 <ul class="playing-cards">
                     <li v-for="card in cardsInHand"
                         class="playing-cards__card-item">
-                        {{ formatCard(card) }}
                         <playing-card :rank="card.rank"
                                       :suit="card.suit"
                                       :selectable="canPlayCard"
@@ -92,34 +97,35 @@
                         @click="endTurn">
                     {{ $translateAndCapitalize('buttons.endTurn') }}
                 </button>
+            </div>
 
-                <div class="chat">
-                    <h3>Chat:</h3>
-                    <div class="chat__container">
-                        <div class="chat__messages" ref="chat-messages">
-                            <ul class="chat__messages-list">
-                                <li v-for="message in chatMessages"
-                                    :key="message.id"
-                                    class="chat-message">
-                                    <span class="chat-message__name">{{ message.name }}:</span>
-                                    <span class="chat-message__message">{{ message.message }}</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="chat__new-message-container">
-                            <form class="chat__new-message-form"
-                                  @submit="sendChatMessage">
-                                <input v-model="newMessage"
-                                       type="text"
-                                       name="message"
-                                       autocomplete="off"
-                                       class="chat__new-message" />
-                                <button type="submit"
-                                        class="button chat__button chat__button--new-message">
-                                    {{ $translateAndCapitalize('buttons.send') }}
-                                </button>
-                            </form>
-                        </div>
+            <div class="chat">
+                <h3>Chat:</h3>
+                <div class="chat__container">
+                    <div ref="chat-messages"
+                         class="chat__messages">
+                        <ul class="chat__messages-list">
+                            <li v-for="message in chatMessages"
+                                :key="message.id"
+                                class="chat-message">
+                                <span class="chat-message__name">{{ message.name }}:</span>
+                                <span class="chat-message__message">{{ message.message }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="chat__new-message-container">
+                        <form class="chat__new-message-form"
+                              @submit="sendChatMessage">
+                            <input v-model="newMessage"
+                                   type="text"
+                                   name="message"
+                                   autocomplete="off"
+                                   class="chat__new-message" />
+                            <button type="submit"
+                                    class="button chat__button chat__button--new-message">
+                                {{ $translateAndCapitalize('buttons.send') }}
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

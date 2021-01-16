@@ -24,5 +24,7 @@
     "AllowReversingCardEnding": true,
 
     "SingleTurnStackableCards": [7],
-    "AllowSingleTurnStackableCardEnding": true
+    "AllowSingleTurnStackableCardEnding": true,
+
+    "SkipNextTurnCards": [8]
 }

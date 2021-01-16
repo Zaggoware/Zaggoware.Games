@@ -4,8 +4,6 @@
 
     public interface ITurnBasedGame : IGame
     {
-        bool CanChangeTurnDirection { get; }
-
         bool IsTurnStarted { get; }
 
         IPlayer? CurrentPlayer { get; }
