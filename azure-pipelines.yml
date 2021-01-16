@@ -28,7 +28,23 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: VSTest@2
+- task: Npm@1
+  displayName: 'npm install'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'install'
+    workingDir: 'src/Zaggoware.Games.Web/ClientApp'
+
+- task: Npm@1
+  displayName: 'npm rebuild "node-sass"'
+  inputs:
+    command: 'custom'
+    workingDir: 'src/Zaggoware.Games.Web/ClientApp'
+    customCommand: 'rebuild "node-sass"'
+
+- task: Npm@1
+  displayName: 'npm build'
+  inputs:
+    command: 'custom'
+    workingDir: 'src/Zaggoware.Games.Web/ClientApp'
+    customCommand: 'run build'
+
