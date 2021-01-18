@@ -145,15 +145,18 @@
 
         protected virtual int GetNextPlayerIndex()
         {
-            var index = CurrentPlayerIndex + (int)TurnDirection;
+            return GetNextPlayerIndex(CurrentPlayerIndex);
+        }
+
+        protected virtual int GetNextPlayerIndex(int currentIndex)
+        {
+            var index = currentIndex + (int)TurnDirection;
             if (TurnDirection == ClockDirection.Clockwise)
             {
                 return index < Players.Count ? index : 0;
             }
-            else
-            {
-                return index >= 0 ? index : Players.Count - 1;
-            }
+
+            return index >= 0 ? index : Players.Count - 1;
         }
 
         protected override void OnStarting()

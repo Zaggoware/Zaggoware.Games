@@ -1,4 +1,4 @@
-namespace Zaggoware.Games.CrazyEights
+﻿namespace Zaggoware.Games.CrazyEights
 {
     using System;
     using System.Linq;
@@ -75,7 +75,7 @@ namespace Zaggoware.Games.CrazyEights
 
         public PlayingCard? DrawCard()
         {
-            if (CurrentPlayer == null)
+            if (CurrentPlayer == null || _enoughCardsDrawn)
             {
                 return null;
             }
@@ -202,6 +202,26 @@ namespace Zaggoware.Games.CrazyEights
                 && !_shouldChangeColor;
         }
 
+        protected override int GetNextPlayerIndex(int currentIndex)
+        {
+            if (Players.All(p => !p.Hand.Any()))
+            {
+                // Something went wrong, nobody has cards in their end. Stop the game to reset the state.
+                Stop();
+                return -1;
+            }
+
+            var nextIndex = currentIndex;
+            do
+            {
+                // Try to get the next player index. If the next player's hand is empty, try again.
+                nextIndex = base.GetNextPlayerIndex(nextIndex);
+            }
+            while (!Players[nextIndex].Hand.Any());
+
+            return nextIndex;
+        }
+
         protected override void OnInitialize(CrazyEightsGameRules rules)
         {
         }
@@ -251,6 +271,11 @@ namespace Zaggoware.Games.CrazyEights
         protected override void OnTurnBegan(GameTurnEventArgs<CrazyEightsPlayer> args)
         {
             base.OnTurnBegan(args);
+
+            if (!args.Player.Hand.Any())
+            {
+                EndTurn();
+            }
 
             if (_shouldSkipNextTurn)
             {
@@ -421,7 +446,7 @@ namespace Zaggoware.Games.CrazyEights
                 return true;
             }
 
-            if (_colorChangerState != null)
+            if (_colorChangerState != null && cardToPlay.Suit != CardSuit.Any)
             {
                 // A color changer card was played in the previous turn.
                 // Only a card of the given color or suit can be played.
