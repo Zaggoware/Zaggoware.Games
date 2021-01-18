@@ -3,14 +3,25 @@
 .playing-cards {
     margin: 0;
     padding: 0;
+    position: relative;
     align-items: center;
     vertical-align: bottom;
     list-style: none;
-    justify-content: space-between;
     display: flex;
 
     &__card-item {
-        max-width: 86px;
+        width: 86px;
+        height: 132px;
+        margin-right: -40px;
+
+        &:hover {
+            margin-top: -10px;
+            margin-right: -5px;
+            box-shadow: 1px 1px 5px 3px rgba(0, 0, 0, 0.25);
+            border-radius: 7px;
+            z-index: 500;
+            zoom: 1.05;
+        }
     }
 }
 
@@ -71,6 +82,7 @@
         margin-top: calc(-350px / 2);
         margin-left: calc(-500px / 2);
         padding: 10px;
+        z-index: 1000;
     }
 
     &__color-suit-chooser-container {
@@ -91,11 +103,13 @@
             left: 50%;
             margin-top: -25px;
             margin-left: -50px;
+            z-index: 900;
         }
 
         &--end-turn {
             width: 150px;
             height: 50px;
+            margin-top: 15px;
             position: relative;
         }
     }

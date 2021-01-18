@@ -57,17 +57,17 @@ export default class Main extends Mixins(BaseMixin)
 
     get canPlayCard(): boolean
     {
-        return this.isCurrentTurn;
+        return this.started && this.isCurrentTurn;
     }
 
     get canDrawCard(): boolean
     {
-        return this.isCurrentTurn;
+        return this.started && this.isCurrentTurn;
     }
 
     get canEndTurn(): boolean
     {
-        return this.isCurrentTurn;
+        return this.started && this.isCurrentTurn;
     }
 
     get discardPileCard(): PlayingCard
@@ -164,10 +164,7 @@ export default class Main extends Mixins(BaseMixin)
             console.log('A card was drawn by:', player);
 
             this.stockpileCount--;
-            if (this.stockpileCount <= 0)
-            {
-                await this.fetchGameInfo();
-            }
+            await this.fetchGameInfo();
         });
 
         this.hubConnection.onColorChanged((model: CrazyEightsColorChangedHubEventModel) =>

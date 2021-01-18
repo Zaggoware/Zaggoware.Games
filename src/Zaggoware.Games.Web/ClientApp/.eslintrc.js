@@ -414,7 +414,7 @@ module.exports = {
         // 'vue/valid-v-cloak': 'error', // essential
         // 'vue/valid-v-else-if': 'error', // essential
         // 'vue/valid-v-else': 'error', // essential
-        // 'vue/valid-v-for': 'error', // essential
+        'vue/valid-v-for': 'warn', // essential
         // 'vue/valid-v-html': 'error', // essential
         // 'vue/valid-v-if': 'error', // essential
         // 'vue/valid-v-model': 'error', // essential

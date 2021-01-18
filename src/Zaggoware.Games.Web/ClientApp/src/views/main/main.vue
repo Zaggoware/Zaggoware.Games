@@ -100,7 +100,7 @@
             </div>
 
             <div class="chat">
-                <h3>Chat:</h3>
+                <h3>{{ $translateAndCapitalize('titles.chat') }}</h3>
                 <div class="chat__container">
                     <div ref="chat-messages"
                          class="chat__messages">
