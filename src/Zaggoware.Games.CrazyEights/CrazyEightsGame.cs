@@ -1,4 +1,4 @@
-﻿namespace Zaggoware.Games.CrazyEights
+namespace Zaggoware.Games.CrazyEights
 {
     using System;
     using System.Linq;
@@ -83,12 +83,16 @@
             var card = DrawCardFromStockpileInternal();
             CurrentPlayer.Hand.Add(card);
 
+            OnCardDrawn(new CardDrawnEventArgs<CrazyEightsPlayer>(CurrentPlayer!, card));
+
             // If the player has a mandatory cad being played, they should draw the required amount.
             if (_shouldStackOrMandatoryDraw)
             {
                 _mandatoryDrawCount--;
                 if (_mandatoryDrawCount > 0)
                 {
+                    // The player started the mandatory draw. Let's draw the others cards automatically.
+                    card = DrawCard().GetValueOrDefault();
                     return card;
                 }
 
@@ -96,8 +100,6 @@
             }
 
             _enoughCardsDrawn = true;
-
-            OnCardDrawn(new CardDrawnEventArgs<CrazyEightsPlayer>(CurrentPlayer!, card));
             return card;
         }
 
@@ -330,7 +332,7 @@
         private bool CanCounterMandatoryDrawCard(PlayingCard previousCard, PlayingCard cardToPlay)
         {
             return Rules.MandatoryDrawCards.Any(r => r.Key == cardToPlay.Rank)
-                && CanStackCard(previousCard, cardToPlay);
+                && CanPlayCard(previousCard, cardToPlay);
         }
 
         private bool CanEndWithCard(PlayingCard cardToPlay)
@@ -376,13 +378,10 @@
                 return true;
             }
 
-            if (_shouldStackOrMandatoryDraw)
-            {
-                return CanCounterMandatoryDrawCard();
-            }
-
             var previousCard = DiscardPile.Last();
-            return CanPlayCard(previousCard, cardToPlay);
+            return _shouldStackOrMandatoryDraw
+                ? CanCounterMandatoryDrawCard(previousCard, cardToPlay)
+                : CanPlayCard(previousCard, cardToPlay);
         }
 
         private bool CanPlayCard(PlayingCard previousCard, PlayingCard cardToPlay)
