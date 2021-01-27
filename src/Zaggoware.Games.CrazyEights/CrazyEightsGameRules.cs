@@ -32,6 +32,7 @@
                 return (CrazyEightsGameRules)Presets[preset].Copy();
             }
 
+            // TODO: Don't directly use the preset in the path, needs validation first.
             var workingDir = Path.GetDirectoryName(typeof(CrazyEightsGameRules).Assembly.Location) ?? string.Empty;
             var path = Path.Combine(workingDir, RulesFolderPath, string.Format(RulesFilePathFormat, preset));
             if (!File.Exists(path))

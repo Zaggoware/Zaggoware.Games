@@ -2,9 +2,9 @@
 {
     using System;
 
-    public class CardSuitChangedEventArgs<TPlayer> : EventArgs
+    public class DiscardSuitChangedEventArgs<TPlayer> : EventArgs
     {
-        public CardSuitChangedEventArgs(TPlayer player, CardSuit suit)
+        public DiscardSuitChangedEventArgs(TPlayer player, CardSuit suit)
         {
             Player = player;
             Suit = suit;

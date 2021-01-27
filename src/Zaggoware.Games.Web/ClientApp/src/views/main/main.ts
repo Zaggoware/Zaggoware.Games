@@ -1,37 +1,35 @@
 ﻿import { Component, Mixins } from 'vue-property-decorator';
 import { BaseMixin } from '@/mixins/base-mixin';
-import { CrazyEightsGameHubConnection } from '@/hub-connections/games/crazy-eights-game-hub-connection';
+import { CrazyEightsGameHub } from '@/hubs/games/crazy-eights-game-hub';
 import {
     CardColor,
     CardRank,
     CardSuit,
-    ColorChangerMode,
-    CrazyEightsColorChangedHubEventModel,
+    ColorChangerMode, CrazyEightsGameInfo,
     CrazyEightsGameRules,
-    CrazyEightsPlayerInfo,
-    CrazyEightsSuitChangedHubEventModel,
+    CrazyEightsPlayer,
     GameConnection,
     MessageInfo,
     PlayingCard
 } from '@/models/custom';
-import chatHub from '@/hub-connections/chat-hub-connection';
+import chatHub from '@/hubs/chat-hub';
 
 @Component
 export default class Main extends Mixins(BaseMixin)
 {
-    hubConnection: CrazyEightsGameHubConnection;
+    hub: CrazyEightsGameHub;
     connectionId = '';
-    name = '';
+    userName = '';
     paused = false;
     canConnect = false;
     started = false;
     connected = false;
-    currentPlayer: CrazyEightsPlayerInfo = null;
+    currentPlayer: CrazyEightsPlayer = null;
     currentPlayerId = '';
     currentTurnIndex = -1;
     cardsInHand: PlayingCard[] = [];
     rules: CrazyEightsGameRules = new CrazyEightsGameRules();
-    players: CrazyEightsPlayerInfo[] = [];
+    players: CrazyEightsPlayer[] = [];
     playersSetup = false;
     spectators: GameConnection[] = [];
     discardPile: PlayingCard[] = [];
@@ -72,148 +70,222 @@ export default class Main extends Mixins(BaseMixin)
 
     get discardPileCard(): PlayingCard
     {
-        return this.discardPile.length > 0 ? this.discardPile[this.discardPile.length - 1] : null;
+        return this.discardPile?.length > 0 ? this.discardPile[this.discardPile.length - 1] : null;
     }
 
     created(): void
     {
-        this.hubConnection = new CrazyEightsGameHubConnection();
-        this.hubConnection.hubConnection.on('UserConnected', (user: GameConnection) =>
-        {
-            console.log('A user connected:', user);
-        });
-
-        this.hubConnection.hubConnection.on('UserDisconnected', (user: GameConnection) =>
-        {
-            console.log('A user disconnected:', user);
-        });
-
-        this.hubConnection.hubConnection.on('PlayerAdded', (player: CrazyEightsPlayerInfo) =>
-        {
-            console.log('A player was added:', player);
-            this.players.push(player);
-        });
-
-        this.hubConnection.hubConnection.on('PlayerRemoved', (player: CrazyEightsPlayerInfo) =>
-        {
-            console.log('A player was removed:', player);
-
-            const index = this.players.findIndex((p) => p.connectionId === player.connectionId);
-            if (index >= 0)
+        this.hub = new CrazyEightsGameHub(this.$route.query.gameId as string ?? '1');
+        this.hub
+            .onUserConnected((evt) =>
             {
-                this.players.splice(index, 1);
-            }
-        });
-
-        this.hubConnection.hubConnection.on('SpectatorAdded', (spectator: GameConnection) =>
-        {
-            console.log('A spectator was added:', spectator);
-            this.spectators.push(spectator);
-        });
-
-        this.hubConnection.hubConnection.on('SpectatorRemoved', (spectator: GameConnection) =>
-        {
-            console.log('A spectator was removed:', spectator);
-
-            const index = this.spectators.findIndex((s: GameConnection) => s.id === spectator.id);
-            if (index >= 0)
+                console.log('A user connected.', evt);
+            })
+            .onUserDisconnected((evt) =>
             {
-                this.spectators.splice(index, 1);
-            }
-        });
+                console.log('A user disconnected.', evt);
+            })
+            .onPlayerAdded((evt) =>
+            {
+                console.log('A player was added.', evt);
+                if (!this.players.find((p) => p.connection.id === evt.player.connection.id))
+                {
+                    this.players.push(evt.player);
+                }
+            })
+            .onPlayerRemoved((evt) =>
+            {
+                console.log('A player was removed.', evt);
 
-        this.hubConnection.hubConnection.on('GameStarted', async () =>
+                const index = this.players.findIndex((p) => p.connection.id === evt.player.connection.id);
+                if (index >= 0)
+                {
+                    this.players.splice(index, 1);
+                }
+            })
+            .onSpectatorAdded((evt) =>
+            {
+                console.log('A spectator was added.', evt);
+                if (!this.spectators.find((s) => s.id === evt.connection.id))
+                {
+                    this.spectators.push(evt.connection);
+                }
+            })
+            .onSpectatorRemoved((evt) =>
+            {
+                console.log('A spectator was removed.', evt);
+
+                const index = this.spectators.findIndex((s: GameConnection) => s.id === evt.connection.id);
+                if (index >= 0)
+                {
+                    this.spectators.splice(index, 1);
+                }
+            })
+            .onGameStarted(async (evt) =>
+            {
+                console.log('Game started.', evt);
+
+                this.onUpdateGameInfo(evt.gameInfo);
+
+                await this.fetchPlayerHand();
+            })
+            .onGameStopped((evt) =>
+            {
+                console.log('Game stopped.', evt);
+
+                this.started = false;
+                this.onUpdateGameInfo(evt.gameInfo);
+            })
+            .onTurnBegan(async (evt) =>
+            {
+                console.log('Turn', evt.turnIndex, 'began for', evt.player, 'at', evt.turnStartedDateTimeUtc);
+                await this.fetchGameInfo();
+                await this.fetchPlayerHand();
+            })
+            .onTurnEnded(async (evt) =>
+            {
+                console.log('Turn', evt.turnIndex, 'ended for', evt.player);
+                await this.fetchGameInfo();
+                await this.fetchPlayerHand();
+            })
+            .onCardPlayed(async (evt) =>
+            {
+                console.log('A card was played:', evt.card, 'by:', evt.player);
+
+                this.nextColor = null;
+                this.nextSuit = null;
+
+                this.discardPile.push(evt.card);
+                await this.fetchGameInfo();
+                await this.fetchPlayerHand();
+            })
+            .onCardDrawn(async (evt) =>
+            {
+                console.log('A card was drawn by:', evt.player);
+
+                this.stockpileCount--;
+                await this.fetchGameInfo();
+                await this.fetchPlayerHand();
+            })
+            .onDiscardColorChanged((evt) =>
+            {
+                console.log('The next color has been changed to:', evt.color);
+                this.nextColor = evt.color;
+                this.nextSuit = null;
+
+                // TODO: Let the player visually know what the next color is.
+            })
+            .onDiscardSuitChanged((evt) =>
+            {
+                console.log('The next suit has been changed to:', evt.suit);
+                this.nextColor = null;
+                this.nextSuit = evt.suit;
+                this.showNextSuit();
+            })
+            .onPlayerFinished((evt) =>
+            {
+                alert(`${evt.player.name} emptied their hand.`);
+            });
+
+        const userName = window.localStorage.getItem('userName');
+        if (!!userName)
         {
-            console.log('Game started.');
-            await this.fetchGameInfo();
-        });
-
-        this.hubConnection.hubConnection.on('GameStopped', async () =>
+            this.userName = userName;
+            this.connect();
+        }
+        else
         {
-            console.log('Game stopped.');
+            this.canConnect = true;
+        }
+    }
 
-            this.started = false;
-            await this.fetchGameInfo();
-        });
-
-        this.hubConnection.hubConnection.on('TurnBegan', async (player: CrazyEightsPlayerInfo, turnIndex: number, turnStartDateTimeUtc?: Date) =>
-        {
-            console.log('A turn began for:', player, turnIndex, turnStartDateTimeUtc);
-            await this.fetchGameInfo();
-        });
-
-        this.hubConnection.hubConnection.on('TurnEnded', async (player: CrazyEightsPlayerInfo, turnIndex: number, turnStartDateTimeUtc: Date) =>
-        {
-            console.log('A turn was ended by:', player, turnIndex, turnStartDateTimeUtc);
-            await this.fetchGameInfo();
-        });
-
-        this.hubConnection.hubConnection.on('CardPlayed', async (player: CrazyEightsPlayerInfo, card: PlayingCard) =>
-        {
-            console.log('A card was played:', card, 'by:', player);
-
-            this.nextColor = null;
-            this.nextSuit = null;
-
-            this.discardPile.push(card);
-            await this.fetchGameInfo();
-        });
-
-        this.hubConnection.hubConnection.on('CardDrawn', async (player: CrazyEightsPlayerInfo) =>
-        {
-            console.log('A card was drawn by:', player);
-
-            this.stockpileCount--;
-            await this.fetchGameInfo();
-        });
-
-        this.hubConnection.onColorChanged((model: CrazyEightsColorChangedHubEventModel) =>
-        {
-            console.log('The next color has been changed to:', model.color);
-            this.nextColor = model.color;
-            this.nextSuit = null;
-
-            // TODO: Let the player visually know what the next color is.
-        });
-
-        this.hubConnection.onSuitChanged((model: CrazyEightsSuitChangedHubEventModel) =>
-        {
-            console.log('The next suit has been changed to:', model.suit);
-            this.nextColor = null;
-            this.nextSuit = model.suit;
-            this.showNextSuit();
-        });
-
-        this.hubConnection.hubConnection.on('PlayerFinished', (player: CrazyEightsPlayerInfo) =>
-        {
-            alert(`${player.name} emptied their hand.`);
-        });
+    connect(): Promise<void>
+    {
+        this.canConnect = false;
 
         console.log('Starting GameHub...');
 
-        this.hubConnection.hubConnection.start()
+        return this.hub.connect(this.userName)
             .then(async () =>
             {
                 console.log('GameHub started.');
 
-                this.connectionId = this.hubConnection.hubConnection.connectionId;
-                this.name = window.localStorage.getItem('user') ?? '';
-                if (this.name)
-                {
-                    console.log('Welcome back,', this.name);
-                    await this.connectUser();
-                }
-                else
-                {
-                    this.canConnect = true;
-                }
+                this.$nextTick(() => this.connected = true);
+
+                this.connectionId = this.hub.connection.connectionId;
+                await this.connectChat();
 
                 console.log('Awaiting user connection to game...');
                 await this.fetchGameInfo();
             }).catch((error) =>
             {
+                this.connected = false;
+                this.canConnect = true;
                 return console.error(error.toString());
             });
+    }
+
+    async connectChat(): Promise<void>
+    {
+        console.log('Starting ChatHub...');
+
+        chatHub.on('MessageReceived', (message: MessageInfo) =>
+        {
+            console.log('Chat message received:', message);
+            this.chatMessages.push(message);
+
+            this.$nextTick(() =>
+            {
+                const $el = this.$refs['chat-messages'] as unknown;
+                if (!!$el)
+                {
+                    $el['scrollTop'] = $el['scrollHeight'];
+                }
+            });
+        });
+
+        chatHub.start()
+            .then(async () =>
+            {
+                console.log('ChatHub started.');
+                console.log('Fetching chat messages...');
+
+                chatHub.invoke('FetchMessages').then((messages: MessageInfo[]) =>
+                {
+                    console.log('Fetched chat messages:', messages);
+                    this.chatMessages = messages;
+
+                    this.$nextTick(() =>
+                    {
+                        const $el = this.$refs['chat-messages'] as unknown;
+                        if (!!$el)
+                        {
+                            $el['scrollTop'] = $el['scrollHeight'];
+                        }
+                    });
+                });
+            }).catch((error) =>
+            {
+                return console.error(error.toString());
+            });
+    }
+
+    async beforeDestroy(): Promise<void>
+    {
+        await this.hub.disconnect();
+    }
+
+    generateUserName(): string
+    {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        for (let i = 0; i < 8; i++)
+        {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        return result;
     }
 
     getColorFromSuit(suit: CardSuit): CardColor
@@ -247,38 +319,46 @@ export default class Main extends Mixins(BaseMixin)
     {
         console.log('Fetching game info...');
 
-        const game = await this.hubConnection.fetchGameInfo();
+        const gameInfo = await this.hub.fetchGameInfo();
 
-        console.log('Fetched game info:', game);
+        console.log('Fetched game info.', gameInfo);
 
-        this.$nextTick(() =>
+        this.onUpdateGameInfo(gameInfo);
+    }
+
+    async fetchPlayerHand(): Promise<void>
+    {
+        console.log('Fetching player hand...');
+
+        this.cardsInHand = await this.hub.fetchPlayerHand() || [];
+
+        console.log('Fetched player hand.', this.cardsInHand);
+    }
+
+    onUpdateGameInfo(gameInfo: CrazyEightsGameInfo): void
+    {
+        this.players = gameInfo.players;
+        this.spectators = gameInfo.spectators;
+        this.started = gameInfo.isStarted;
+        this.rules = gameInfo.rules;
+        this.discardPile = gameInfo.discardPile || [];
+        this.stockpileCount = gameInfo.stockpileCount;
+        this.currentTurnIndex = gameInfo.turnIndex;
+        this.currentPlayerId = !!gameInfo.currentPlayer ? gameInfo.currentPlayer.connection.id : null;
+        this.currentPlayer = gameInfo.currentPlayer;
+
+        if (gameInfo.isStarted && !this.playersSetup)
         {
-            this.players = game.players;
-            this.spectators = game.spectators;
-            this.started = game.started;
-            this.rules = game.rules;
-            this.discardPile = game.discardPile;
-            this.stockpileCount = game.stockpileCount;
-            this.currentTurnIndex = game.currentTurnIndex;
-            this.currentPlayerId = game.currentPlayerId;
-            this.currentPlayer = !!game.currentPlayerId
-                ? game.players.find((p: CrazyEightsPlayerInfo) => p.connectionId === game.currentPlayerId)
-                : null;
-            this.cardsInHand = game.cardsInHand;
+            // TODO: setup table.
+            this.playersSetup = true;
+        }
 
-            if (game.started && !this.playersSetup)
-            {
-                // TODO: setup table.
-                this.playersSetup = true;
-            }
-
-            this.showNextSuit();
-        });
+        this.showNextSuit();
     }
 
     showNextSuit(): void
     {
-        if (this.nextSuit === null)
+        if (this.nextSuit === null || !this.discardPile)
         {
             return;
         }
@@ -293,52 +373,19 @@ export default class Main extends Mixins(BaseMixin)
         }
     }
 
-    submitName(evt: Event): boolean
+    submitConnectForm(evt: Event): boolean
     {
         evt.preventDefault();
-        this.connectUser();
-        return false;
-    }
 
-    async connectUser(): Promise<void>
-    {
-        console.log('Connecting to the game and chat...');
-
-        chatHub.on('MessageReceived', (message: MessageInfo) =>
+        if (!this.userName || this.userName.match(/^\s+$/))
         {
-            console.log('Chat message received:', message);
-            this.chatMessages.push(message);
-        });
+            this.userName = this.generateUserName();
+        }
 
-        chatHub.start()
-            .then(async () =>
-            {
-                console.log('ChatHub started.');
-                console.log('Fetching chat messages...');
+        window.localStorage.setItem('userName', this.userName);
+        this.connect();
 
-                chatHub.invoke('FetchMessages').then((messages: MessageInfo[]) =>
-                {
-                    console.log('Fetched chat messages:', messages);
-                    this.chatMessages = messages;
-
-                    this.$nextTick(() =>
-                    {
-                        const $el = this.$refs['chat-messages'] as unknown;
-                        $el['scrollTop'] = $el['scrollHeight'];
-                    });
-                });
-            }).catch((error) =>
-            {
-                return console.error(error.toString());
-            });
-
-        window.localStorage.setItem('user', this.name);
-
-        await this.hubConnection.connectUser(this.name);
-
-        console.log('Connected to the game.');
-
-        this.connected = true;
+        return false;
     }
 
     async startGame(): Promise<void>
@@ -348,7 +395,7 @@ export default class Main extends Mixins(BaseMixin)
             return;
         }
 
-        this.started = await this.hubConnection.startGame();
+        this.started = await this.hub.startGame();
     }
 
     formatCard(card: PlayingCard): string
@@ -376,7 +423,7 @@ export default class Main extends Mixins(BaseMixin)
             return;
         }
 
-        const success = await this.hubConnection.playCard(cardIndex, suit, rank);
+        const success = await this.hub.playCard(cardIndex, suit, rank);
         if (!success)
         {
             // TODO: feedback to user.
@@ -396,9 +443,9 @@ export default class Main extends Mixins(BaseMixin)
         }
     }
 
-    isCurrentPlayer(player: CrazyEightsPlayerInfo): boolean
+    isCurrentPlayer(player: CrazyEightsPlayer): boolean
     {
-        return this.currentPlayerId === player.connectionId;
+        return this.currentPlayerId === player.connection.id;
     }
 
     async drawCard(): Promise<void>
@@ -408,7 +455,7 @@ export default class Main extends Mixins(BaseMixin)
             return;
         }
 
-        const card = await this.hubConnection.drawCard();
+        const card = await this.hub.drawCard();
         if (!!card)
         {
             this.cardsInHand.push(card);
@@ -422,10 +469,10 @@ export default class Main extends Mixins(BaseMixin)
             return;
         }
 
-        await this.hubConnection.endTurn();
+        await this.hub.endTurn();
     }
 
-    async pickColorOrSuit(suit: CardSuit, rank: CardRank): Promise<void>
+    async pickColorOrSuit(suit: CardSuit): Promise<void>
     {
         if (!this.canPickColorOrSuit)
         {
@@ -436,11 +483,11 @@ export default class Main extends Mixins(BaseMixin)
         if (this.rules.colorChangerMode === ColorChangerMode.Color)
         {
             const color = this.getColorFromSuit(suit);
-            result = await this.hubConnection.changeColor(color);
+            result = await this.hub.changeDiscardColor(color);
         }
         else
         {
-            result = await this.hubConnection.changeSuit(suit);
+            result = await this.hub.changeDiscardSuit(suit);
         }
 
         if (!!result)
@@ -460,12 +507,12 @@ export default class Main extends Mixins(BaseMixin)
 
         console.log('Sending chat message:', this.newMessage);
 
-        chatHub.send('SendMessage', this.name, this.newMessage).then(() =>
+        chatHub.send('SendMessage', this.userName, this.newMessage).then(() =>
         {
             const messageInfo = new MessageInfo();
             messageInfo.dateTimeUtc = new Date();
             messageInfo.id = Date.now().toString(); // TODO: fix
-            messageInfo.name = this.name;
+            messageInfo.name = this.userName;
             messageInfo.message = this.newMessage;
             this.chatMessages.push(messageInfo);
 

@@ -2,9 +2,9 @@
 {
     using System;
 
-    public class CardColorChangedEventArgs<TPlayer> : EventArgs
+    public class DiscardColorChangedEventArgs<TPlayer> : EventArgs
     {
-        public CardColorChangedEventArgs(TPlayer player, CardColor color)
+        public DiscardColorChangedEventArgs(TPlayer player, CardColor color)
         {
             Player = player;
             Color = color;

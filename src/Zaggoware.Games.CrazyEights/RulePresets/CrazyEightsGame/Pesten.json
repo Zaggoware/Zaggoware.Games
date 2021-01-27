@@ -18,9 +18,9 @@
     "AllowColorChangerCardEnding": true,
 
     "MandatoryDrawCards": { "Two": 2, "Joker": 5 },
-    "AllowMandatoryDrawCardEnding": true,
+    "AllowMandatoryDrawCardEnding": false,
 
-    "ReversingCards": ["Ace"],
+    "ReversingCards": ["Ace", "King"],
     "AllowReversingCardEnding": true,
 
     "SingleTurnStackableCards": [7],

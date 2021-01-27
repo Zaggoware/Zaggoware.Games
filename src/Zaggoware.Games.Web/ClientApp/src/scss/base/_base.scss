@@ -4,7 +4,13 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     background: #ffffff;
     font-family: Arial, sans-serif;
+}
+
+button,
+input[type=submit] {
+    cursor: pointer;
 }

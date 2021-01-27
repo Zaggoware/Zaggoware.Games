@@ -14,7 +14,7 @@
         private bool _shouldSkipNextTurn;
         private bool _shouldStackOrMandatoryDraw;
         private ColorChangerState? _colorChangerState;
-        private bool _shouldChangeColor;
+        private bool _shouldChangeDiscardColorOrSuit;
 
         public CrazyEightsGame(CrazyEightsGameRules rules)
             : base(rules)
@@ -25,9 +25,9 @@
 
         public event EventHandler<CardPlayedEventArgs<CrazyEightsPlayer>>? CardPlayed;
 
-        public event EventHandler<CardColorChangedEventArgs<CrazyEightsPlayer>>? ColorChanged;
+        public event EventHandler<DiscardColorChangedEventArgs<CrazyEightsPlayer>>? DiscardColorChanged;
 
-        public event EventHandler<CardSuitChangedEventArgs<CrazyEightsPlayer>>? SuitChanged;
+        public event EventHandler<DiscardSuitChangedEventArgs<CrazyEightsPlayer>>? DiscardSuitChanged;
 
         public event EventHandler<CrazyEightsPlayer>? PlayerFinished;
 
@@ -39,9 +39,9 @@
 
         public CardStack Stockpile { get; } = new CardStack();
 
-        public bool ChangeColor(CardColor color)
+        public bool ChangeDiscardColor(CardColor color)
         {
-            if (!CanChangeColorOrSuit(color, null))
+            if (!CanChangeDiscardColor())
             {
                 return false;
             }
@@ -50,15 +50,15 @@
             {
                 Color = color
             };
-            _shouldChangeColor = false;
+            _shouldChangeDiscardColorOrSuit = false;
 
-            OnColorChanged(new CardColorChangedEventArgs<CrazyEightsPlayer>(CurrentPlayer!, color));
+            OnDiscardColorChanged(new DiscardColorChangedEventArgs<CrazyEightsPlayer>(CurrentPlayer!, color));
             return true;
         }
 
-        public bool ChangeSuit(CardSuit suit)
+        public bool ChangeDiscardSuit(CardSuit suit)
         {
-            if (!CanChangeColorOrSuit(null, suit))
+            if (!CanChangeDiscardSuit())
             {
                 return false;
             }
@@ -67,9 +67,9 @@
             {
                 Suit = suit
             };
-            _shouldChangeColor = false;
+            _shouldChangeDiscardColorOrSuit = false;
 
-            OnSuitChanged(new CardSuitChangedEventArgs<CrazyEightsPlayer>(CurrentPlayer!, suit));
+            OnDiscardSuitChanged(new DiscardSuitChangedEventArgs<CrazyEightsPlayer>(CurrentPlayer!, suit));
             return true;
         }
 
@@ -138,7 +138,7 @@
 
             if (Rules.ColorChangerCards.Contains(card.Rank))
             {
-                _shouldChangeColor = true;
+                _shouldChangeDiscardColorOrSuit = true;
                 _enoughCardsPlayed = true;
             }
 
@@ -146,7 +146,7 @@
             if (CurrentPlayer.Hand.Count == 0
                 && (Players.Count(p => p.Hand.Any()) <= 1
                     || !Rules.EliminationMode
-                    || (Rules.EliminationMode && !_shouldChangeColor)))
+                    || (Rules.EliminationMode && !_shouldChangeDiscardColorOrSuit)))
             {
                 // The player has no more cards in hand. Don't end turn yet, played card can affect the leftover players.
                 _enoughCardsPlayed = true;
@@ -199,7 +199,7 @@
         {
             return base.CanEndTurn(turnIndex, playerIndex, turnStartedDateTimeUtc)
                 && (_enoughCardsDrawn || _enoughCardsPlayed)
-                && !_shouldChangeColor;
+                && !_shouldChangeDiscardColorOrSuit;
         }
 
         protected override int GetNextPlayerIndex(int currentIndex)
@@ -263,7 +263,7 @@
         {
             _enoughCardsPlayed = false;
             _enoughCardsDrawn = false;
-            _shouldChangeColor = false;
+            _shouldChangeDiscardColorOrSuit = false;
 
             base.OnTurnBeginning(args);
         }
@@ -330,16 +330,17 @@
             Stop();
         }
 
-        private bool CanChangeColorOrSuit(CardColor? color, CardSuit? suit)
+        private bool CanChangeDiscardColor()
         {
-            if (!_shouldChangeColor || (color == null && suit == null))
-            {
-                return false;
-            }
+            return _shouldChangeDiscardColorOrSuit
+                && Rules.ColorChangerMode == ColorChangerMode.Color;
 
-            return Rules.ColorChangerMode == ColorChangerMode.Color
-                ? color != null || suit != null
-                : suit != null;
+        }
+
+        private bool CanChangeDiscardSuit()
+        {
+            return _shouldChangeDiscardColorOrSuit
+                && Rules.ColorChangerMode != ColorChangerMode.Color;
         }
 
         private bool CanCounterMandatoryDrawCard()
@@ -498,9 +499,9 @@
             CardPlayed?.Invoke(this, args);
         }
 
-        private void OnColorChanged(CardColorChangedEventArgs<CrazyEightsPlayer> args)
+        private void OnDiscardColorChanged(DiscardColorChangedEventArgs<CrazyEightsPlayer> args)
         {
-            ColorChanged?.Invoke(this, args);
+            DiscardColorChanged?.Invoke(this, args);
         }
 
         private void OnPlayerFinished(CrazyEightsPlayer player)
@@ -525,9 +526,9 @@
             DiscardPile.AddCard(lastDiscardedCard.Value);
         }
 
-        private void OnSuitChanged(CardSuitChangedEventArgs<CrazyEightsPlayer> args)
+        private void OnDiscardSuitChanged(DiscardSuitChangedEventArgs<CrazyEightsPlayer> args)
         {
-            SuitChanged?.Invoke(this, args);
+            DiscardSuitChanged?.Invoke(this, args);
         }
 
         private class ColorChangerState

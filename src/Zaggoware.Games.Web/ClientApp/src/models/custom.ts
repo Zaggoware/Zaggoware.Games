@@ -1,6 +1,4 @@
-﻿import { Dictionary } from 'vue-router/types/router';
-
-export interface CardDeck extends Array<PlayingCard>
+﻿export interface CardDeck extends Array<PlayingCard>
 {
     count: number;
     faceUp: boolean;
@@ -90,6 +88,13 @@ export interface GameRules
     maxPlayers: number;
 }
 
+export interface TurnBasedGameRules extends CardGameRules
+{
+    canChangeTurnDirection: boolean;
+    maxTurns: number;
+    maxTurnDuration: string;
+}
+
 export interface CardGameRules extends GameRules
 {
     numberOfPacks: number;
@@ -97,13 +102,132 @@ export interface CardGameRules extends GameRules
     excludedCards: CardRank[];
 }
 
-export interface TurnBasedCardGameRules extends CardGameRules
+export interface TurnBasedCardGameRules extends CardGameRules, TurnBasedGameRules
 {
-    maxTurns: number;
 }
 
-export interface IHubEventModel
+export interface GameInfo<TGameRules extends GameRules, TPlayer extends Player>
 {
+    isStarted: boolean;
+    isPaused: boolean;
+    rules: TGameRules;
+    players: TPlayer[];
+}
+
+export interface TurnBasedGameInfo<TGameRules extends TurnBasedGameRules, TPlayer extends Player>
+    extends GameInfo<TGameRules, TPlayer>
+{
+    turnIndex: number;
+    currentPlayer: TPlayer;
+}
+
+export enum GameHubActions
+{
+    ConnectUser,
+    StartGame,
+    FetchGameInfo,
+    StopGame,
+}
+
+export enum TurnBasedGameHubActions
+{
+    BeginTurn,
+    EndTurn
+}
+
+export interface IHubEvent
+{
+    eventName: string;
+}
+
+export enum GameHubEvents
+{
+    UserConnected,
+    UserDisconnected,
+    GameStarted,
+    GameStopped,
+    PlayerAdded,
+    PlayerRemoved,
+    SpectatorAdded,
+    SpectatorRemoved
+}
+
+export interface GameStartedHubEvent<TGameInfo extends GameInfo<TGameRules, TPlayer>, TGameRules extends GameRules, TPlayer extends Player> extends IHubEvent
+{
+    gameInfo: TGameInfo;
+}
+
+export interface GameStoppedHubEvent<TGameInfo extends GameInfo<TGameRules, TPlayer>, TGameRules extends GameRules, TPlayer extends Player> extends IHubEvent
+{
+    gameInfo: TGameInfo;
+}
+
+export interface PlayerAddedHubEvent<TPlayer extends Player> extends IHubEvent
+{
+    player: TPlayer;
+}
+
+export interface PlayerRemovedHubEvent<TPlayer extends Player> extends IHubEvent
+{
+    player: TPlayer;
+}
+
+export interface SpectatorAddedHubEvent extends IHubEvent
+{
+    connection: GameConnection;
+}
+
+export interface SpectatorRemovedHubEvent extends IHubEvent
+{
+    connection: GameConnection;
+}
+
+export interface UserConnectedHubEvent extends IHubEvent
+{
+    connection: GameConnection;
+}
+
+export interface UserDisconnectedHubEvent extends IHubEvent
+{
+    connection: GameConnection;
+}
+
+export enum TurnBasedGameHubEvents
+{
+    TurnBegan,
+    TurnEnded
+}
+
+export interface GameTurnBeganHubEvent extends IHubEvent
+{
+    player: Player;
+    turnIndex: number;
+    turnStartedDateTimeUtc: Date;
+}
+
+export interface GameTurnEndedHubEvent extends IHubEvent
+{
+    player: Player;
+    turnIndex: number;
+    turnStartedDateTimeUtc: Date;
+}
+
+export enum CrazyEightsGameHubActions
+{
+    ChangeDiscardColor,
+    ChangeDiscardSuit,
+    DrawCard,
+    FetchPlayerHand,
+    PlayCard
+}
+
+export enum CrazyEightsGameHubEvents
+{
+    PlayerFinished,
+    CardDrawn,
+    CardPlayed,
+    DiscardColorChanged,
+    DiscardSuitChanged
 }
 
 export class CrazyEightsGameRules implements TurnBasedCardGameRules
@@ -112,6 +236,7 @@ export class CrazyEightsGameRules implements TurnBasedCardGameRules
     allowMandatoryDrawCardEnding: boolean;
     allowReversingCardEnding: boolean;
     allowSingleTurnStackingCardEnding: boolean;
+    canChangeTurnDirection: boolean;
     colorChangerCardStackingMode: CardStackingMode;
     colorChangerCards: CardRank[];
     colorChangerMode: ColorChangerMode;
@@ -121,6 +246,7 @@ export class CrazyEightsGameRules implements TurnBasedCardGameRules
     numberOfJokersPerPack: boolean;
     mandatoryDrawCards: Record<CardRank, number>;
     maxPlayers: number;
+    maxTurnDuration: string;
     maxTurns: number;
     minPlayers: number;
     numberOfPacks: number;
@@ -132,60 +258,52 @@ export class CrazyEightsGameRules implements TurnBasedCardGameRules
     skipNextTurnCardStackingMode: SpecialCardStackingMode;
 }
 
-export class CrazyEightsPlayerInfo
+export class CrazyEightsPlayer implements Player
 {
-    connectionId: string = '';
-    name: string = '';
     cardsInHand: number = 0;
+    connection: GameConnection;
+    name: string = '';
 }
 
-export class CrazyEightsGameInfo
+export class CrazyEightsGameInfo implements TurnBasedGameInfo<CrazyEightsGameRules, CrazyEightsPlayer>
 {
-    currentTurnIndex = -1;
-    currentPlayerId = '';
-    paused = false;
-    started = false;
-    players: CrazyEightsPlayerInfo[] = [];
-    cardsInHand: PlayingCard[] = [];
+    currentPlayer: CrazyEightsPlayer;
+    turnIndex: number;
+    isPaused = false;
+    isStarted = false;
+    players: CrazyEightsPlayer[] = [];
     spectators: GameConnection[] = [];
     rules: CrazyEightsGameRules;
     discardPile: PlayingCard[] = [];
     stockpileCount = 0;
 }
 
-export enum CrazyEightsGameEvents
+export interface CrazyEightsCardDrawnHubEvent extends IHubEvent
 {
-    GameStarted,
-    GameStopped,
-    PlayerAdded,
-    PlayerFinished,
-    PlayerRemoved,
-    SpectatorAdded,
-    SpectatorRemoved,
-    CardDrawn,
-    CardPlayed,
-    ColorChanged,
-    SuitChanged,
-    TurnBegan,
-    TurnEnded,
+    player: CrazyEightsPlayer;
 }
 
-export class CrazyEightsCardPlayedGame implements IHubEventModel
+export interface CrazyEightsCardPlayedHubEvent extends IHubEvent
 {
-    player: CrazyEightsPlayerInfo;
+    player: CrazyEightsPlayer;
     card: PlayingCard;
 }
 
-export class CrazyEightsColorChangedHubEventModel implements IHubEventModel
+export interface CrazyEightsDiscardColorChangedHubEvent extends IHubEvent
 {
-    player: CrazyEightsPlayerInfo;
+    player: CrazyEightsPlayer;
     color: CardColor;
 }
 
-export class CrazyEightsSuitChangedHubEventModel implements IHubEventModel
+export interface CrazyEightsDiscardSuitChangedHubEvent extends IHubEvent
 {
-    player: CrazyEightsPlayerInfo;
+    player: CrazyEightsPlayer;
     suit: CardSuit;
+}
+
+export interface CrazyEightsPlayerFinishedHubEvent extends IHubEvent
+{
+    player: CrazyEightsPlayer;
 }
 
 export class MessageInfo

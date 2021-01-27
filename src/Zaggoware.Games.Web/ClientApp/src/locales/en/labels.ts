@@ -1,4 +1,6 @@
 ﻿export default {
+    'autoconnect': 'auto-connect',
+
     'cards': 'cards',
 
     'cardSuit0': 'any',

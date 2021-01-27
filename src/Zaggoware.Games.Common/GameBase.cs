@@ -88,13 +88,12 @@
 
         public bool AddSpectator(IGameConnection spectator)
         {
-            if (!Spectators.Contains(spectator))
+            if (Spectators.Contains(spectator))
             {
                 return false;
             }
 
             Spectators.Add(spectator);
-
             OnSpectatorAdded(spectator);
             return true;
         }
