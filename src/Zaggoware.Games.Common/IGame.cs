@@ -12,6 +12,8 @@
 
         IGameRules Rules { get; }
 
+        IGameType Type { get; }
+
         bool AddPlayer(IPlayer player);
 
         bool AddSpectator(IGameConnection spectator);

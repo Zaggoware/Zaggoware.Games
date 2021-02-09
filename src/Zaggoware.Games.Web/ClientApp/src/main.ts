@@ -10,10 +10,12 @@ import cssVars from 'css-vars-ponyfill';
 cssVars();
 
 // Components
-import Layout from '@/components/layout/layout.vue';
+import LayoutBare from '@/components/layout-bare/layout-bare.vue';
+import LayoutDefault from '@/components/layout-default/layout-default.vue';
 import PlayingCard from '@/components/playing-card/playing-card.vue';
 
-Vue.component('layout', Layout);
+Vue.component('layout-bare', LayoutBare);
+Vue.component('layout-default', LayoutDefault);
 Vue.component('playing-card', PlayingCard);
 
 // Filters

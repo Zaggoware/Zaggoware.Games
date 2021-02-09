@@ -5,10 +5,6 @@
 
     public class CrazyEightsPlayerHubModel : PlayerHubModel
     {
-        public CrazyEightsPlayerHubModel()
-        {
-        }
-
         public CrazyEightsPlayerHubModel(CrazyEightsPlayer player)
             : base(player)
         {

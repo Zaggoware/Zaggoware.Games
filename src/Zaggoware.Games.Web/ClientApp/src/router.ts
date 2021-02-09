@@ -7,7 +7,21 @@ Vue.use(VueRouter);
 export const routes: RouteConfig[] = [
     {
         path: '/',
-        component: () => import('@/views/main/main.vue')
+        component: () => import('@/views/lobby/lobby-overview.vue')
+    },
+    {
+        path: '/game',
+        component: () => import('@/views/game/game.vue'),
+        meta: {
+            layout: 'bare'
+        },
+        children: [{
+            path: 'crazy-eights/:id',
+            component: () => import('@/views/game/crazy-eights/crazy-eights-game.vue'),
+            meta: {
+                layout: 'bare'
+            }
+        }]
     }
 ];
 

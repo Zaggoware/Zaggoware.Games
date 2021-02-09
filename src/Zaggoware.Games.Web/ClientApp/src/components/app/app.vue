@@ -1,6 +1,6 @@
 ﻿<template>
     <div class="app">
-        <component :is="'layout'"
+        <component :is="'layout-' + ($route.meta.layout || 'default')"
                    class="app__content">
             <router-view></router-view>
         </component>

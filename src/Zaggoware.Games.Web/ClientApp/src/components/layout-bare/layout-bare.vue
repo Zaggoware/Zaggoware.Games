@@ -4,4 +4,4 @@
     </main>
 </template>
 
-<script src="./layout.ts" lang="ts"></script>
+<script src="./layout-bare.ts" lang="ts"></script>

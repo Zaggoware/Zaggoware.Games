@@ -1,5 +1,6 @@
 ﻿@import '../_reference';
 
+/* stylelint-disable */
 * {
     box-sizing: border-box;
 }
@@ -8,9 +9,12 @@ html,
 body {
     background: #ffffff;
     font-family: Arial, sans-serif;
+    overflow: hidden;
 }
 
 button,
-input[type=submit] {
+input[type='submit'] {
     cursor: pointer;
 }
+
+/* stylelint-enable */

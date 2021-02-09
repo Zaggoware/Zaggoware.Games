@@ -1,16 +1,28 @@
 ﻿namespace Zaggoware.Games.Hubs
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
     using Microsoft.AspNetCore.SignalR;
-    using Microsoft.Extensions.Primitives;
 
     using Zaggoware.Games.Common;
+    using Zaggoware.Games.Hubs.Models;
 
     public class GameLobbyHub : Hub
     {
+        static GameLobbyHub()
+        {
+            GameLobbyManager.Instance.AddLobby(GameLobby.Create("Test Lobby"));
+        }
+
+        public ICollection<GameLobbyHubModel> FetchLobbies()
+        {
+            return GameLobbyManager.Instance
+                .ActiveLobbies
+                .Select(l => new GameLobbyHubModel(l))
+                .ToList();
+        }
+
         public string CreateLobby(string name, string? password = null, string? userDisplayName = null)
         {
             // TODO: Implement identity.

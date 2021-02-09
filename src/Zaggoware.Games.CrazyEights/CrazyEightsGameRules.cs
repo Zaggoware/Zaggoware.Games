@@ -78,7 +78,7 @@
         public CardStackingMode? ColorChangerCardStackingMode { get; set; }
 
         public CardRank[] ColorChangerCards { get; set; } = Array.Empty<CardRank>();
-
+        
         public ColorChangerMode ColorChangerMode { get; set; }
 
         public CardStackingMode DefaultStackingMode { get; set; }

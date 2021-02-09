@@ -60,6 +60,8 @@
 
         public bool IsStarted { get; private set; }
 
+        public abstract IGameType Type { get; }
+
         public TGameRules Rules
         {
             get => (TGameRules)_rules.Copy();

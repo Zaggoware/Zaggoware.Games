@@ -1,0 +1,24 @@
+﻿.layout {
+    &__header {
+        min-height: 65px;
+        background-color: #1e90ff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        box-shadow: 0 2px 5px 5px rgba(0, 0, 0, 0.25);
+        z-index: 1000;
+    }
+
+    &__header-title {
+        margin: 0;
+        padding: 15px;
+        font-size: 32px;
+        color: #ffffff;
+    }
+}
+
+.content {
+    position: relative;
+}

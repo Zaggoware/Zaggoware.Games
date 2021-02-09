@@ -6,23 +6,28 @@
         where TGame : class, IGame
         where TGameRules : class, IGameRules
     {
-        protected GameType(string userFriendlyName)
-            : this()
+        public abstract string Name { get; }
+
+        public abstract string[] DefaultRulePresets { get; }
+
+        public override bool Equals(object? obj)
         {
-            UserFriendlyName = userFriendlyName;
+            if (obj is  GameType<TGame, TGameRules> other)
+            {
+                return Equals(other);
+            }
+
+            return false;
         }
 
-        private GameType()
+        public override int GetHashCode()
         {
-            Name = typeof(TGame).Name;
-            UserFriendlyName = Name;
+            return Name.GetHashCode();
         }
-
-        public string Name { get; protected set; }
-
-        public string UserFriendlyName { get; protected set; }
 
         protected abstract TGame CreateGame(TGameRules gameRules);
+
+        public abstract IGameRules CreateDefaultGameRules(string? preset = null);
 
         IGame IGameType.CreateGame(IGameRules gameRules)
         {
@@ -34,6 +39,11 @@
             throw new InvalidOperationException(
                 $"Game rules is of the wrong type. Expected type '{typeof(TGameRules).FullName}', "
                 + $"got '{gameRules.GetType().FullName}' instead.");
+        }
+
+        protected virtual bool Equals(GameType<TGame, TGameRules> a, GameType<TGame, TGameRules> b)
+        {
+            return a.Name == b.Name;
         }
     }
 }

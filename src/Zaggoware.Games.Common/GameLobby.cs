@@ -30,13 +30,15 @@
 
         public IGame? CurrentGame { get; protected set; }
 
-        public IGameType? CurrentGameType { get; protected set; }
-
         public string Id { get; protected set; } = string.Empty;
 
-        public bool IsPublic => !string.IsNullOrEmpty(HashedPassword);
+        public bool IsPrivate => !string.IsNullOrEmpty(HashedPassword);
 
         public string Name { get; protected set; } = string.Empty;
+
+        public IGameRules? SelectedGameRules { get; set; }
+
+        public IGameType? SelectedGameType { get; protected set; }
 
         protected string? HashedPassword { get; set; }
 
@@ -52,7 +54,7 @@
 
         public virtual bool ChangePassword(string currentPassword, string newPassword)
         {
-            if (IsPublic)
+            if (!IsPrivate)
             {
                 throw new InvalidOperationException(
                     $"The lobby is public. Please use {nameof(MakePrivate)}() instead.");
@@ -79,7 +81,7 @@
 
         public virtual void MakePrivate(string password)
         {
-            if (!IsPublic)
+            if (IsPrivate)
             {
                 throw new InvalidOperationException(
                     $"The lobby is already private. Please use {nameof(ChangePassword)}() instead.");
@@ -93,12 +95,21 @@
             HashedPassword = null;
         }
 
-        public void SetupGame(IGameType gameType, IGameRules gameRules)
+        public void SelectGameType(IGameType gameType)
         {
-            var game = gameType.CreateGame(gameRules);
+            if (CurrentGame != null)
+            {
+                throw new InvalidOperationException("A game is still running.");
+            }
+
+            SelectedGameType = gameType;
+            SelectedGameRules = gameType.CreateDefaultGameRules();
+        }
+
+        public void StopCurrentGame()
+        {
             CurrentGame?.Dispose();
-            CurrentGame = game;
-            CurrentGameType = gameType;
+            CurrentGame = null;
         }
 
         private static string HashPassword(string password)

@@ -212,6 +212,18 @@ export interface GameTurnEndedHubEvent extends IHubEvent
     turnStartedDateTimeUtc: Date;
 }
 
+export class GameLobby
+{
+    activeConnections: number = 0;
+    createdOnUtc?: Date = new Date();
+    currentGameId?: string | null = null;
+    id: string = '';
+    isPrivate: boolean = false;
+    name: string = '';
+    selectedGameType?: string | null = null;
+    selectedGameRules: Record<string, unknown> | null = null;
+}
+
 export enum CrazyEightsGameHubActions
 {
     ChangeDiscardColor,

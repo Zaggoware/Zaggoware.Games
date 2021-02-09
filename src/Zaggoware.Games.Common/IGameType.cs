@@ -4,7 +4,9 @@
     {
         string Name { get; }
 
-        string UserFriendlyName { get; }
+        string[] DefaultRulePresets { get; }
+
+        IGameRules CreateDefaultGameRules(string? preset = null);
 
         IGame CreateGame(IGameRules gameRules);
     }

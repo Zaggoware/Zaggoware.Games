@@ -4,6 +4,7 @@
     using System.Linq;
 
     using Zaggoware.Games.CardGames.Common;
+    using Zaggoware.Games.Common;
     using Zaggoware.Games.Common.Events;
 
     public class CrazyEightsGame : TurnBasedCardGameBase<CrazyEightsGameRules, CrazyEightsPlayer>
@@ -221,6 +222,8 @@
 
             return nextIndex;
         }
+
+        public override IGameType Type => new CrazyEightsGameType();
 
         protected override void OnInitialize(CrazyEightsGameRules rules)
         {

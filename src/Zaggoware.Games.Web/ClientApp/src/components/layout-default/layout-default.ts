@@ -2,6 +2,6 @@
 import { BaseMixin } from '@/mixins/base-mixin';
 
 @Component
-export default class Layout extends Mixins(BaseMixin)
+export default class LayoutDefault extends Mixins(BaseMixin)
 {
 }

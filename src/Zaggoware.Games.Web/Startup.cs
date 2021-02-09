@@ -52,6 +52,7 @@ namespace Zaggoware.Games.Web
             {
                 endpoints.MapControllers();
 
+                endpoints.MapHub<GameLobbyHub>("/hubs/lobby");
                 endpoints.MapHub<CrazyEightsGameHub>("/hubs/games/crazy-eights");
                 endpoints.MapHub<ChatHub>("/hubs/chat");
             });

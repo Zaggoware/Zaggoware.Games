@@ -13,9 +13,10 @@ import {
     PlayingCard
 } from '@/models/custom';
 import chatHub from '@/hubs/chat-hub';
+import { GameMixin } from '@/mixins/game-mixin';
 
 @Component
-export default class Main extends Mixins(BaseMixin)
+export default class CrazyEightsGameView extends Mixins(BaseMixin, GameMixin)
 {
     hub: CrazyEightsGameHub;
     connectionId = '';
@@ -75,7 +76,7 @@ export default class Main extends Mixins(BaseMixin)
 
     created(): void
     {
-        this.hub = new CrazyEightsGameHub(this.$route.query.gameId as string ?? '1');
+        this.hub = new CrazyEightsGameHub(this.$route.params.id as string ?? '1');
         this.hub
             .onUserConnected((evt) =>
             {
@@ -199,13 +200,14 @@ export default class Main extends Mixins(BaseMixin)
         }
     }
 
-    connect(): Promise<void>
+    async connect(): Promise<void>
     {
         this.canConnect = false;
 
         console.log('Starting GameHub...');
 
-        return this.hub.connect(this.userName)
+        await this.hub.start();
+        await this.hub.connectUser(this.userName)
             .then(async () =>
             {
                 console.log('GameHub started.');
@@ -272,7 +274,7 @@ export default class Main extends Mixins(BaseMixin)
 
     async beforeDestroy(): Promise<void>
     {
-        await this.hub.disconnect();
+        await this.hub.stop();
     }
 
     generateUserName(): string

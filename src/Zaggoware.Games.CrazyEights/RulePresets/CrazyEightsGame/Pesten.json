@@ -1,4 +1,7 @@
 ﻿{
+    "Version": 1.0,
+    "GameType": "CrazyEights",
+
     "MinPlayers": 2,
     "MaxPlayers": 6,
     "MaxTurns": 0,

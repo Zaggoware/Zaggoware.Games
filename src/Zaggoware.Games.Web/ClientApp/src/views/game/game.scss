@@ -1,0 +1,76 @@
+﻿.game {
+    &__container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    &__modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(235, 235, 235, 0.15);
+        overflow: hidden;
+        z-index: 100;
+    }
+
+    &__modal-container {
+        width: 500px;
+        height: 350px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: calc(-500px / 2);
+        margin-top: calc(-350px / 2);
+        background-color: rgba(235, 235, 235, 0.85);
+        box-shadow: 1px 1px 5px 5px rgba(0, 0, 0, 0.25);
+        border-radius: 3px;
+        padding: 10px;
+        overflow-y: auto;
+    }
+
+    &__model-title {
+        margin-bottom: 15px;
+    }
+
+    &__modal-content {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__modal-menu {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    &__modal-menu-item {
+        margin: 10px 0;
+    }
+
+    &__button {
+        background-color: #1e90ff;
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 600;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        border: 1px solid darken(#1e90ff, 10%);
+        border-radius: 15px;
+        padding: 15px 25px;
+        text-align: center;
+        cursor: pointer;
+
+        &:hover {
+            background-color: darken(#1e90ff, 10%);
+        }
+
+        &--stretch {
+            width: 100%;
+        }
+    }
+}

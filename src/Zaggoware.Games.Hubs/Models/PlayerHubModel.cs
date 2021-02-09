@@ -4,10 +4,6 @@
 
     public class PlayerHubModel
     {
-        public PlayerHubModel()
-        {
-        }
-
         public PlayerHubModel(IPlayer player)
         {
             Connection = player.Connection;

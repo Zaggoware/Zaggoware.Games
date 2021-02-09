@@ -13,13 +13,15 @@
 
         IGame? CurrentGame { get; }
 
-        IGameType? CurrentGameType { get; }
-
         string Id { get; }
 
-        bool IsPublic { get; }
+        bool IsPrivate { get; }
 
         string Name { get; }
+
+        IGameRules? SelectedGameRules { get; }
+
+        IGameType? SelectedGameType { get; }
 
         void ChangeName(string name);
 
@@ -31,6 +33,8 @@
 
         void MakePublic();
 
-        void SetupGame(IGameType gameType, IGameRules gameRules);
+        void SelectGameType(IGameType gameType);
+
+        void StopCurrentGame();
     }
 }

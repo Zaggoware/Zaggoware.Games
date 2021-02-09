@@ -1,5 +1,4 @@
-﻿import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import {
+﻿import {
     GameHubActions,
     GameHubEvents,
     GameInfo,
@@ -14,34 +13,13 @@ import {
     UserConnectedHubEvent,
     UserDisconnectedHubEvent
 } from '@/models/custom';
+import { HubBase } from '@/hubs/hub-base';
 
-export abstract class GameHub<TGameInfo extends GameInfo<TGameRules, TPlayer>, TGameRules extends GameRules, TPlayer extends Player>
+export abstract class GameHub<TGameInfo extends GameInfo<TGameRules, TPlayer>, TGameRules extends GameRules, TPlayer extends Player> extends HubBase
 {
-    connection: HubConnection;
-
-    protected constructor(hubUrl: string)
+    connectUser(userName: string): Promise<void>
     {
-        this.connection = new HubConnectionBuilder()
-            .withUrl(hubUrl)
-            .build();
-    }
-
-    connect(userName: string): Promise<void>
-    {
-        return this.connection.start()
-            .then(() =>
-            {
-                return this.connection.invoke(GameHubActions[GameHubActions.ConnectUser], userName);
-            })
-            .catch((reason) =>
-            {
-                console.error('Could not connect to the GameHub:', reason);
-            });
-    }
-
-    disconnect(): Promise<void>
-    {
-        return this.connection.stop();
+        return this.connection.invoke(GameHubActions[GameHubActions.ConnectUser], userName);
     }
 
     fetchGameInfo(): Promise<TGameInfo>

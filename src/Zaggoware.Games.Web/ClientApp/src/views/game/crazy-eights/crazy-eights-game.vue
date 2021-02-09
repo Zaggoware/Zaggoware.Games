@@ -1,5 +1,5 @@
 ﻿<template>
-    <div>
+    <div id="crazy-eights-game">
         <form v-if="!connected && canConnect"
               class="connect-form"
               @submit="submitConnectForm">
@@ -70,7 +70,8 @@
                             <h3>{{ $translateAndCapitalize('titles.chooseSuit') }}</h3>
                         </div>
                         <div class="game__modal-content">
-                            <playing-card v-for="card in pickColorOrSuitCards"
+                            <playing-card v-for="(card, index) in pickColorOrSuitCards"
+                                          :key="index"
                                           :rank="card.rank"
                                           :suit="card.suit"
                                           :selectable="canPickColorOrSuit"
@@ -97,7 +98,8 @@
                     <h3>{{ $translateAndCapitalize('titles.myCards') }}</h3>
 
                     <ul class="playing-cards">
-                        <li v-for="card in cardsInHand"
+                        <li v-for="(card, index) in cardsInHand"
+                            :key="index"
                             class="playing-cards__card-item">
                             <playing-card :rank="card.rank"
                                           :suit="card.suit"
@@ -150,5 +152,5 @@
     </div>
 </template>
 
-<script src="./main.ts" lang="ts"></script>
-<style src="./main.scss" lang="scss"></style>
+<script src="./crazy-eights-game.ts" lang="ts"></script>
+<style src="./crazy-eights-game.scss" lang="scss"></style>
